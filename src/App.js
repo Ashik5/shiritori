@@ -8,15 +8,18 @@ export default function App() {
   const [player1Score, setPlayer1Score] = useState(100);
   const [player2Score, setPlayer2Score] = useState(100);
   const [currentPlayer, setCurrentPlayer] = useState(1);
+  const [game,setGame] = useState(0);
   const [seconds, setSeconds] = useState(13);
   const [alert, setAlert] = useState(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setSeconds(seconds => seconds - 1);
+      if(game){
+        setSeconds(seconds => seconds - 1);
+      }
     }, 1000);
     return () => clearInterval(interval);
-  }, [seconds]);
+  }, [seconds,game]);
 
   const player1Ref = useRef(null);
   const player2Ref = useRef(null);
@@ -58,6 +61,7 @@ export default function App() {
 
   return (
     <div className="container">
+      <button onClick={() => setGame(!game)}>{game?"Pause":"Start Game"}</button>
       <h2 className="alert">{alert}</h2>
       <h2>{seconds}</h2>
       <div className="card-container">
@@ -66,7 +70,7 @@ export default function App() {
           <h3>Score: {player1Score}</h3>
           <input className="card-input" type="text" placeholder={lastAlphabet} ref={player1Ref} onKeyDown={(e) => {
             const word = e.target.value;
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && game) {
               fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
                 .then(res => {
                   if (res.ok) {
@@ -112,7 +116,7 @@ export default function App() {
           <h3>Score: {player2Score}</h3>
           <input className="card-input" type="text" ref={player2Ref} placeholder={lastAlphabet} onKeyDown={(e) => {
             const word = e.target.value;
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && game) {
               fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
                 .then(res => {
                   if (res.ok) {
